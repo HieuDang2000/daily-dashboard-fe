@@ -11,18 +11,25 @@ import {
 import { CalendarIcon } from "lucide-react";
 import { Label } from "@radix-ui/react-label";
 import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import taskData from "@/constants";
-export default function CalendarForm() {
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+export default function Page({ params }: { params: { name: string } }) {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(100);
   useEffect(() => {
-    setProgress(45)
-  },[])
+    setProgress(45);
+  }, []);
   return (
     <>
-      <p className="mb-4 text-2xl font-bold">{"Project Name"}</p>
+      <div className="flex items-center my-4">
+        <p className="text-2xl font-bold">{decodeURIComponent(params.name)}</p>
+        <p className="ml-4">(Duration: startDate - end Date)</p>
+      </div>
       <div className="p-4 border border-gray-300 rounded-md mt-8">
-        <p className="pb-2 font-medium">ANALYSIS</p>
+        <p className="pb-2 font-medium">Overview</p>
         <div className="flex items-center">
           <span className="min-w-[100px] mr-2">Daily Process:</span>
 
@@ -30,31 +37,46 @@ export default function CalendarForm() {
             <div
               className={`w-[${progress}%] bg-black text-xs font-medium text-white text-center p-0.5 leading-none rounded-full`}
             >
-              {"45%"}
+              {`${progress}%`}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex items-center content-center">
         <Popover>
-          <PopoverTrigger>
-            <div className="flex items-center border bg-white p-2 rounded-md">
-              Pick a Date
-              <CalendarIcon className="ml-4 h-4 w-4 opacity-50" />
-            </div>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"outline"}
+              className={cn(
+                "w-[280px] justify-start text-left font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {date ? format(date, "PPP") : <span>Pick a date</span>}
+            </Button>
           </PopoverTrigger>
-          <PopoverContent>
+          <PopoverContent className="w-auto p-0">
             <Calendar
               mode="single"
               selected={date}
               onSelect={setDate}
-              className="rounded-md p-0"
+              initialFocus
             />
           </PopoverContent>
         </Popover>
-
-        <Button type="submit" className="bg-green-700 ml-4">
+        <Tabs defaultValue="account" className="">
+          <TabsList>
+            <TabsTrigger value="account">Day</TabsTrigger>
+            <TabsTrigger value="password">Week</TabsTrigger>
+          </TabsList>
+          <TabsContent value="account"></TabsContent>
+          <TabsContent value="password"></TabsContent>
+        </Tabs>
+        <Button onClick={() => {
+          setDate(new Date())
+        }} type="submit" className="bg-green-700 ml-4">
           Today
         </Button>
       </div>

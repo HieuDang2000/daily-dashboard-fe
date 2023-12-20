@@ -70,6 +70,7 @@ export function ComboboxDemo({ subject, data}) {
                 key={data.value}
                 value={data.value}
                 onSelect={(currentValue) => {
+                  console.log(currentValue)
                   setValue(currentValue === value ? "" : currentValue)
                   setOpen(false)
                 }}
